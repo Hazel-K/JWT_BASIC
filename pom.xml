@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cos</groupId>
-	<artifactId>jwt</artifactId>
+	<artifactId>jwt-1</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>jwt</name>
+	<name>jwt-1</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -64,6 +64,10 @@
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>3.11.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 	</dependencies>
 
