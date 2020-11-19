@@ -8,6 +8,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import com.cos.jwt.JwtAuthenticationFilter;
 import com.cos.jwt.filter.MyFilter3;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		// corsFilter 설정으로 인해 인증이 필요하지 않은 모든 페이지는 Security가 있음에도 불구하고 접속이 가능함 
 		.formLogin().disable() // 기본 로그인 폼 안쓴다
 		.httpBasic().disable() // 기본 http 형식도 안쓴다
+		.addFilter(new JwtAuthenticationFilter(authenticationManager())) // 이 필터 전달시 꼭 전달해야하는 파라미터가 있음(AuthenticationManager), 이 파라미터는 이 클래스가 extends한 클래스에 미리 담겨있어 쉽게 사용 가능
 		.authorizeRequests()
 		.antMatchers("/api/v1/user/**")
 		.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
