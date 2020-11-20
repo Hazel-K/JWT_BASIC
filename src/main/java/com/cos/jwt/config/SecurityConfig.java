@@ -1,10 +1,13 @@
 package com.cos.jwt.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
@@ -19,9 +22,16 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	private final CorsFilter corsFilter;
 	
+	// IoC에서 패스워드 인코드를 찾지 못하므로 Bean으로 등록시켜줌
+	// 등록시켜주면 Security에서 알아서 이것을 찾아 비밀번호를 Encoding함
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class); // 시큐리티에 필터 거는 법
+//		http.addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class); // 시큐리티에 필터 거는 법
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않겠다는 말
 		.and()
