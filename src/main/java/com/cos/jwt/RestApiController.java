@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.jwt.model.User;
 import com.cos.jwt.repository.UserRepository;
+import com.google.gson.Gson;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +31,12 @@ public class RestApiController {
 		return "<h1>Token</h1>";
 	}
 	
-	@PostMapping("join")
-	public String join(@RequestBody User user) {
-		System.out.println("join 호출" + user);
+	@RequestMapping(value = "join", method = RequestMethod.POST, produces = "application/json; charset=utf8")
+	public String join(User user, @RequestBody String joinString) {
+		System.out.println("001. " + joinString);
+		Gson gson = new Gson();
+		user = gson.fromJson(joinString, User.class);
+		System.out.println("002. " + user);
 		user.setPassword(bCryptpasswordEncoder.encode(user.getPassword()));
 		user.setRoles("ROLE_USER");
 		userRepository.save(user);

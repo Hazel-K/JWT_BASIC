@@ -50,9 +50,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			
 			// 이제 토큰 만들어서 로그인 시도. FormLogin을 사용한다면 자동으로 해주는 부분임
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-			System.out.println("야");
 			Authentication authentication = authenticationManager.authenticate(authenticationToken); // 이것이 실행되면 PrincipalDetailsService의 loadUserByUsername()이 실행됨
-			System.out.println("호");
 			// 그리고 authentication에는 내 로그인한 정보가 담기게 됨
 			// 인증이 정상적으로 완료되면 authentication 객체는 session에 저장됨 (로그인이 정상적으로 됐다는 뜻)
 			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal(); // authentication 로그인 정보 받기
