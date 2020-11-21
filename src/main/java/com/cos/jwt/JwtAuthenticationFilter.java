@@ -1,7 +1,7 @@
 package com.cos.jwt;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.cos.jwt.auth.PrincipalDetails;
 import com.cos.jwt.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +70,30 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+		PrincipalDetails principalDetails = (PrincipalDetails)authResult.getPrincipal();
+		// RSA 방식은 아니고 Hash 암호방식
+		String jwtToken = JWT.create() // jwt 토큰 생성
+				.withSubject("cos토큰") // 토큰 이름
+				.withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME)) // 현재 시간 + 내가 정한 만료 시간
+				.withClaim("id", principalDetails.getUser().getId()) // 비공개 클레임
+				.withClaim("username", principalDetails.getUser().getUsername())
+				.sign(Algorithm.HMAC512(JwtProperties.SECRET)); // HMAC은 서버만 알고 있는 값이 있어야됨
+		
 		System.out.println("successfulAuthentication 실행됨: 인증 완료됐다는뜻");
-		super.successfulAuthentication(request, response, chain, authResult);
+		response.addHeader("Authorization", "Bearer " + jwtToken); // Bearer다음 무조건 한칸 띄어야 됨
+		
+		// <일반적인 방식>
+		// 유저네임, 패스워드 로그인 정상
+		// 서버쪽 세션ID 생성
+		// 클라이언트 쿠키 세션 ID를 응답
+		// session.getAttribute로 인식
+		// 요청할 때마다 쿠키값 세션 ID를 항상 들고 요청하기 때문에 서버는 세션 ID가 유효한지 판단해서 유효하면 인증이 필요한 페이지로 접근하게 하면 됨
+		
+		// <이 프로젝트에서 방식>
+		// 유저네임, 패스워드 로그인 정상
+		// JWT 토큰생성
+		// 클라이언트 쪽으로 JWT 발급
+		// 요청할 때마다 JWT 토큰으로 요청
+		// 서버는 토큰이 유효한지를 판단 (필터 만들어야 함)
 	}
 }
